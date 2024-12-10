@@ -44,7 +44,7 @@ if (!privateKey) {
         model: openai("gpt-4o-mini"),
         tools: tools,
         maxSteps: 5,
-        prompt: "send 0.0001 CHR to db328d94fad8b44cd9919d4be6cdc0a160d7341eb7b1573e2328b68a2dc14cb3",
+        prompt: "send 0.0001 CHR to <recipient address>",
     });
 
     console.log(result.text);
