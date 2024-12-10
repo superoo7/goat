@@ -3,7 +3,7 @@ import { generateText } from "ai";
 import { getOnChainTools } from "@goat-sdk/adapter-vercel-ai";
 import { createClient, newSignatureProvider } from "postchain-client";
 import { CHROMIA_MAINNET_BRID, chromia } from "@goat-sdk/wallet-chromia";
-import { createConnection, createGenericEvmKeyStore, createKeyStoreInteractor } from "@chromia/ft4";
+import { createConnection } from "@chromia/ft4";
 import { sendCHR } from "@goat-sdk/core";
 
 require("dotenv").config();
