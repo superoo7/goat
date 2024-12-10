@@ -22,9 +22,8 @@ export const CHR_ASSET_ID =
 
 export type ChromiaWalletOptions = {
     client: IClient;
-    keystore?: KeyStoreInteractor;
-    keystoreAddress?: string;
-    signatureProvider?: SignatureProvider;
+    keystoreInteractor: KeyStoreInteractor;
+    accountAddress: string;
     connection: Connection;
 };
 
@@ -36,19 +35,13 @@ export type ChromiaTransaction = {
 
 export function chromia({
     client,
-    keystore,
-    keystoreAddress,
-    signatureProvider,
+    keystoreInteractor,
+    accountAddress,
     connection,
 }: ChromiaWalletOptions) {
     return {
         getAddress: () => {
-            if (signatureProvider) {
-                return signatureProvider.pubKey.toString("hex");
-            } else if (keystore) {
-                return keystoreAddress || "";
-            }
-            return "";
+            return accountAddress;
         },
         getChain(): { type: "chromia" } {
             return {
@@ -56,42 +49,12 @@ export function chromia({
             };
         },
         async signMessage(message: string) {
-            if (signatureProvider) {
-                const signature = await client.signTransaction(
-                    {
-                        operations: [
-                            {
-                                name: "signMessage",
-                                args: [Buffer.from(message)],
-                            },
-                        ],
-                        signers: [signatureProvider.pubKey],
-                    },
-                    signatureProvider
-                );
-                return { signature: signature.toString("hex") };
-            } else if (keystore) {
-                // TODO: Implement keystore signing
-                return { signature: "" };
-            }
+            // TODO: Implement keystore signing
             return { signature: "" };
         },
         async sendTransaction({ to, assetId, amount }: ChromiaTransaction) {
-            let session: Session;
-            if (signatureProvider) {
-                const { getSession } = createKeyStoreInteractor(
-                    client,
-                    createInMemoryFtKeyStore(signatureProvider)
-                );
-                session = await getSession(
-                    signatureProvider.pubKey.toString("hex")
-                );
-            } else if (keystore) {
-                const accounts = await keystore.getAccounts();
-                session = await keystore.getSession(accounts[0].id);
-            } else {
-                throw new Error("No signature provider or keystore provided");
-            }
+            const accounts = await keystoreInteractor.getAccounts();
+            const session = await keystoreInteractor.getSession(accounts[0].id);
             const asset = await connection.getAssetById(assetId);
             if (!asset) {
                 throw new Error("Asset not found");
@@ -107,7 +70,6 @@ export function chromia({
             if (account) {
                 const balance = await account.getBalanceByAssetId(CHR_ASSET_ID);
                 if (balance) {
-                    console.log(balance);
                     return {
                         decimals: balance.asset.decimals,
                         symbol: balance.asset.symbol,

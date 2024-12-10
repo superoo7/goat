@@ -1,17 +1,17 @@
 import { openai } from "@ai-sdk/openai";
 import { generateText } from "ai";
 import { getOnChainTools } from "@goat-sdk/adapter-vercel-ai";
-import { createClient, newSignatureProvider } from "postchain-client";
+import { createClient } from "postchain-client";
 import { CHROMIA_MAINNET_BRID, chromia } from "@goat-sdk/wallet-chromia";
-import { createConnection } from "@chromia/ft4";
+import { createConnection, createInMemoryEvmKeyStore, createKeyStoreInteractor } from "@chromia/ft4";
 import { sendCHR } from "@goat-sdk/core";
 
 require("dotenv").config();
 
-const privateKey = process.env.CHROMIA_PRIVATE_KEY;
+const privateKey = process.env.EVM_PRIVATE_KEY;
 
 if (!privateKey) {
-    throw new Error("CHROMIA_PRIVATE_KEY is not set in the environment");
+    throw new Error("EVM_PRIVATE_KEY is not set in the environment");
 }
 
 (async () => {
@@ -20,15 +20,19 @@ if (!privateKey) {
         blockchainRid: CHROMIA_MAINNET_BRID.ECONOMY_CHAIN
     });
     const connection = createConnection(chromiaClient);
-    const signatureProvider = newSignatureProvider({
-        privKey: Buffer.from(privateKey, "hex"),
-    });
-    console.log("PUBKEY: ", signatureProvider.pubKey.toString("hex"));
-
+    const evmKeyStore = createInMemoryEvmKeyStore({
+        privKey: privateKey,
+    } as any);
+    const keystoreInteractor = createKeyStoreInteractor(chromiaClient, evmKeyStore)
+    const accounts =  await keystoreInteractor.getAccounts();
+    const accountAddress = accounts[0].id.toString("hex");
+    console.log("ACCOUNT ADDRESS: ", accountAddress);
+    
     const tools = await getOnChainTools({
         wallet: chromia({
             client: chromiaClient,
-            signatureProvider,
+            accountAddress,
+            keystoreInteractor,
             connection
         }),
         plugins: [
@@ -40,7 +44,7 @@ if (!privateKey) {
         model: openai("gpt-4o-mini"),
         tools: tools,
         maxSteps: 5,
-        prompt: "send 0.0001 CHR to <recipient_address>",
+        prompt: "send 0.0001 CHR to db328d94fad8b44cd9919d4be6cdc0a160d7341eb7b1573e2328b68a2dc14cb3",
     });
 
     console.log(result.text);
