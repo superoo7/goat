@@ -3,7 +3,8 @@ import { generateText } from "ai";
 import { getOnChainTools } from "@goat-sdk/adapter-vercel-ai";
 import { createClient, newSignatureProvider } from "postchain-client";
 import { CHROMIA_MAINNET_BRID, chromia } from "@goat-sdk/wallet-chromia";
-import { createConnection } from "@chromia/ft4";
+import { createConnection, createGenericEvmKeyStore, createKeyStoreInteractor } from "@chromia/ft4";
+import { sendCHR } from "@goat-sdk/core";
 
 require("dotenv").config();
 
@@ -14,22 +15,25 @@ if (!privateKey) {
 }
 
 (async () => {
-    const client = await createClient({
+    const chromiaClient = await createClient({
         nodeUrlPool: ["https://system.chromaway.com:7740"],
         blockchainRid: CHROMIA_MAINNET_BRID.ECONOMY_CHAIN
     });
+    const connection = createConnection(chromiaClient);
     const signatureProvider = newSignatureProvider({
-        privKey: privateKey
+        privKey: Buffer.from(privateKey, "hex"),
     });
-    const connection = createConnection(client);
+    console.log("PUBKEY: ", signatureProvider.pubKey.toString("hex"));
 
     const tools = await getOnChainTools({
         wallet: chromia({
-            client,
+            client: chromiaClient,
             signatureProvider,
             connection
         }),
-        plugins: [],
+        plugins: [
+            sendCHR()
+        ],
     });
 
     const result = await generateText({

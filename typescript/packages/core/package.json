@@ -13,7 +13,9 @@
     "types": "./dist/index.d.ts",
     "dependencies": {
         "@solana/web3.js": "catalog:",
+        "@chromia/ft4": "catalog:",
         "abitype": "^1.0.6",
+        "postchain-client": "catalog:",
         "viem": "catalog:",
         "zod": "catalog:"
     },
