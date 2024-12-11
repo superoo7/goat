@@ -1,38 +1,34 @@
 {
-    "name": "@goat-sdk/plugin-uniswap",
-    "version": "0.0.0",
+    "name": "@goat-sdk/wallet-lit",
+    "version": "0.0.1",
+    "sideEffects": false,
     "files": ["dist/**/*", "README.md", "package.json"],
     "scripts": {
         "build": "tsup",
         "clean": "rm -rf dist",
         "test": "vitest run --passWithNoTests"
     },
-    "sideEffects": false,
     "main": "./dist/index.js",
     "module": "./dist/index.mjs",
     "types": "./dist/index.d.ts",
-    "devDependencies": {
-        "@types/node": "^22.7.4",
-        "globals": "^15.12.0",
-        "ts-node": "^10.9.2",
-        "tsup": "^8.3.5",
-        "typescript": "^5.6.3",
-        "vitest": "^2.1.5"
-    },
     "dependencies": {
         "@goat-sdk/core": "workspace:*",
-        "viem": "^2.21.49",
-        "zod": "catalog:"
+        "@lit-protocol/lit-node-client": "catalog:",
+        "@lit-protocol/lit-auth-client": "catalog:",
+        "@lit-protocol/auth-helpers": "catalog:",
+        "@lit-protocol/constants": "catalog:",
+        "@lit-protocol/contracts-sdk": "catalog:",
+        "@lit-protocol/misc": "catalog:",
+        "@lit-protocol/wrapped-keys": "catalog:",
+        "@solana/web3.js": "catalog:",
+        "viem": "catalog:"
     },
     "peerDependencies": {
         "@goat-sdk/core": "workspace:*",
-        "viem": "^2.21.49"
+        "viem": "catalog:"
     },
-    "engines": {
-        "node": ">=20.12.2 <21",
-        "npm": "please-use-pnpm",
-        "pnpm": ">=9",
-        "yarn": "please-use-pnpm"
+    "devDependencies": {
+        "@lit-protocol/types": "catalog:"
     },
     "homepage": "https://ohmygoat.dev",
     "repository": {
@@ -43,6 +39,5 @@
     "bugs": {
         "url": "https://github.com/goat-sdk/goat/issues"
     },
-    "keywords": ["ai", "agents", "web3"],
-    "packageManager": "pnpm@9.14.2"
+    "keywords": ["ai", "agents", "web3"]
 }
