@@ -3,15 +3,11 @@ import {
     IClient,
     QueryObject,
     RawGtv,
-    SignatureProvider,
 } from "postchain-client";
 import {
     Connection,
     createAmount,
-    createInMemoryFtKeyStore,
-    createKeyStoreInteractor,
     KeyStoreInteractor,
-    Session,
 } from "@chromia/ft4";
 
 export enum CHROMIA_MAINNET_BRID {
@@ -53,6 +49,9 @@ export function chromia({
             return { signature: "" };
         },
         async sendTransaction({ to, assetId, amount }: ChromiaTransaction) {
+            if (!to.match(/^[a-f0-9]{64}$/i)) {
+                throw new Error("Invalid Address");
+            }
             const accounts = await keystoreInteractor.getAccounts();
             const session = await keystoreInteractor.getSession(accounts[0].id);
             const asset = await connection.getAssetById(assetId);
