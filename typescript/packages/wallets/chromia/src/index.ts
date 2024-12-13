@@ -1,8 +1,4 @@
-import {
-    type Connection,
-    type KeyStoreInteractor,
-    createAmount,
-} from "@chromia/ft4";
+import { type Connection, type KeyStoreInteractor, createAmount } from "@chromia/ft4";
 import { type DictPair, type IClient, type QueryObject, type RawGtv, SignatureProvider } from "postchain-client";
 
 export enum CHROMIA_MAINNET_BRID {
